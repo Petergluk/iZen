@@ -1,0 +1,34 @@
+# Blueprint for the I-Ching AI application
+# This file defines the infrastructure for deploying the app on Render.
+
+services:
+  # ------------------ Backend Service (API Proxy) ------------------
+  - type: web
+    name: iching-ai-backend
+    runtime: node
+    plan: free # Can be scaled up if needed
+    buildCommand: 'npm install'
+    startCommand: 'node server.js'
+    envVars:
+      - key: API_KEY
+        sync: false # This will prompt for the value in the Render dashboard on first deploy
+
+  # ------------------ Frontend Service (Static Site) ------------------
+  - type: static
+    name: iching-ai-frontend
+    plan: free
+    buildCommand: 'npm install && npm run build'
+    publishDirectory: dist
+    # Rewrite rule to support client-side routing (good practice)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # This tells the frontend where to find the backend API.
+      # Render automatically creates internal URLs for services.
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: iching-ai-backend
+          property: url # Use the internal URL provided by Render

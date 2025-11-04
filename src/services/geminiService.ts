@@ -1,6 +1,6 @@
 import { DivinationResult, HexagramData } from '../types';
 
-// FIX: This service now calls the backend API instead of Gemini directly from the client.
+// FIX: Hardcode API_URL to '/api' to resolve TypeScript error and rely on Vite proxy.
 const API_URL = '/api';
 
 const getIChingInterpretation = async (

@@ -98,14 +98,12 @@
       }
 
       .pattern {
-        stroke-dasharray: 1000;
-        stroke-dashoffset: 1000;
-        animation: draw 5s ease-in-out forwards infinite;
+        animation: draw 30s linear infinite;
       }
 
       @keyframes draw {
         to {
-          stroke-dashoffset: 0;
+          stroke-dashoffset: -1200;
         }
       }
 
@@ -122,15 +120,19 @@
 {
   "imports": {
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
+    "vite": "https://aistudiocdn.com/vite@^7.1.12",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
+    "express": "https://aistudiocdn.com/express@^5.1.0",
+    "cors": "https://aistudiocdn.com/cors@^2.8.5"
   }
 }
 </script>
 </head>
   <body class="bg-slate-900 text-gray-300">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

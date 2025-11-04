@@ -17,7 +17,7 @@ const InterpretingAnimation: React.FC = () => {
           fill="none"
           stroke="url(#grad1)"
           strokeWidth="2"
-          style={{ animationDuration: '20s', strokeDasharray: '200 50' }}
+          style={{ animationDuration: '24s', strokeDasharray: '200 50' }}
         />
         <path
           className="pattern"
@@ -25,7 +25,7 @@ const InterpretingAnimation: React.FC = () => {
           fill="none"
           stroke="url(#grad1)"
           strokeWidth="2"
-          style={{ animationDuration: '12s', animationDirection: 'reverse', strokeDasharray: '30 30' }}
+          style={{ animationDuration: '18s', animationDirection: 'reverse', strokeDasharray: '30 30' }}
         />
         <path
           className="pattern"
@@ -33,7 +33,7 @@ const InterpretingAnimation: React.FC = () => {
           fill="none"
           stroke="url(#grad1)"
           strokeWidth="1"
-          style={{ animationDuration: '15s', strokeDasharray: '10 10 100 10' }}
+          style={{ animationDuration: '20s', strokeDasharray: '10 10 100 10' }}
         />
       </svg>
 
