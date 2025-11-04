@@ -7,7 +7,7 @@ services:
   - type: web
     name: iching-ai-backend
     runtime: node
-    plan: free # Can be scaled up if needed
+    plan: free # Free tier for web services is appropriate here.
     buildCommand: 'npm install'
     startCommand: 'node server.js'
     envVars:
@@ -19,15 +19,14 @@ services:
   - type: web # Use 'web' for service type.
     name: iching-ai-frontend
     runtime: static # Specify 'static' runtime to serve static files.
-    plan: free
+    # Static sites are free by default; the 'plan' property is not needed.
     buildCommand: 'npm install && npm run build'
     staticPublishPath: dist # Correct property for the output directory.
     routes:
-      # Rewrite rule to proxy API requests from the frontend to the backend.
-      # This makes `/api/...` calls from the frontend work in production.
+      # Rewrite rule to proxy API requests from the frontend to the backend via Render's internal network.
       - type: rewrite
         source: /api/:path*
-        destination: https://iching-ai-backend.onrender.com/api/:path*
+        destination: http://iching-ai-backend/api/:path*
       # Rewrite rule for single-page applications (SPA).
       # This ensures all paths are handled by index.html for client-side routing.
       - type: rewrite
