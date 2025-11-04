@@ -3,6 +3,7 @@
 
 services:
   # ------------------ Backend Service (API Proxy) ------------------
+  # This service securely handles requests to the Gemini API.
   - type: web
     name: iching-ai-backend
     runtime: node
@@ -11,24 +12,24 @@ services:
     startCommand: 'node server.js'
     envVars:
       - key: API_KEY
-        sync: false # This will prompt for the value in the Render dashboard on first deploy
+        sync: false # The API key is set securely in the Render dashboard, not in code.
 
   # ------------------ Frontend Service (Static Site) ------------------
-  - type: static
+  # This service serves the compiled React application.
+  - type: web # Use 'web' for service type.
     name: iching-ai-frontend
+    runtime: static # Specify 'static' runtime to serve static files.
     plan: free
     buildCommand: 'npm install && npm run build'
-    publishDirectory: dist
-    # Rewrite rule to support client-side routing (good practice)
+    staticPublishPath: dist # Correct property for the output directory.
     routes:
+      # Rewrite rule to proxy API requests from the frontend to the backend.
+      # This makes `/api/...` calls from the frontend work in production.
+      - type: rewrite
+        source: /api/:path*
+        destination: https://iching-ai-backend.onrender.com/api/:path*
+      # Rewrite rule for single-page applications (SPA).
+      # This ensures all paths are handled by index.html for client-side routing.
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      # This tells the frontend where to find the backend API.
-      # Render automatically creates internal URLs for services.
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: iching-ai-backend
-          property: url # Use the internal URL provided by Render
