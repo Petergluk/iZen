@@ -264,10 +264,10 @@ const App: React.FC = () => {
                 );
             case 'error':
                  return (
-                    <div className="text-center animate-fade-in bg-red-900/50 p-8 rounded-lg">
-                        <h2 className="text-3xl font-semibold text-red-300">Произошла ошибка</h2>
-                        <p className="mt-4 text-red-200">{error}</p>
-                        <button onClick={handleReset} className="mt-8 px-6 py-3 bg-gray-200 text-slate-900 font-bold rounded-full hover:bg-white transition-colors">
+                    <div className="text-center animate-fade-in bg-[#4d2b2c] p-8 md:p-12 rounded-xl shadow-2xl max-w-lg w-full">
+                        <h2 className="text-4xl font-semibold text-[#d1a3a3]">Произошла ошибка</h2>
+                        <p className="mt-4 text-lg text-gray-300">{error}</p>
+                        <button onClick={handleReset} className="mt-8 px-8 py-3 bg-gray-200 text-slate-900 font-bold rounded-full hover:bg-white transition-colors duration-300 shadow-lg">
                             Попробовать снова
                         </button>
                     </div>

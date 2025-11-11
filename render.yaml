@@ -1,0 +1,26 @@
+# Blueprint for deploying the I-Ching AI app on Render.
+# See https://render.com/docs/blueprint-spec for details.
+
+services:
+  - type: web
+    name: i-ching-ai-oracle
+    # Use 'nodejs' environment to have access to npm
+    env: node
+    # The 'free' plan is a good starting point.
+    plan: free
+    # Specify the branch to deploy
+    branch: main
+    # Commands to build the application
+    buildCommand: "npm install && npm run build"
+    # Command to start the web server after build
+    startCommand: "npm start"
+    # Environment variables
+    envVars:
+      - key: API_KEY
+        # This tells Render not to sync the value from this file.
+        # The user MUST set this secret key in the Render dashboard
+        # under Environment -> Secret Files or Environment Variables.
+        sync: false
+      - key: NODE_VERSION
+        # Specify a recent and stable version of Node.js
+        value: 20
