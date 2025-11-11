@@ -4,7 +4,7 @@
   "description": "Современное веб-приложение для консультации с И-Цзин с толкованиями, сгенерированными искусственным интеллектом, для получения глубоких и персонализированных прозрений.",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p dist && cp index.html dist/ && esbuild index.tsx --bundle --outfile=dist/bundle.js --define:process.env.API_KEY=\\\"\"$API_KEY\\\"\" --jsx=automatic",
+    "build": "mkdir -p dist && cp index.html dist/ && cp -r public dist/ && esbuild index.tsx --bundle --outfile=dist/bundle.js --define:process.env.API_KEY=\\\"\"$API_KEY\\\"\" --jsx=automatic",
     "start": "serve -s dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
