@@ -43,17 +43,13 @@ const getIChingInterpretation = async (
                 type: Type.OBJECT,
                 properties: {
                     name: { type: Type.STRING, description: 'Название первичной гексаграммы на русском.' },
-                    judgment: { type: Type.STRING, description: 'Общее толкование первичной гексаграммы, ее основной смысл и совет.' },
+                    judgment: { type: Type.STRING, description: 'Общее толкование первичной гексаграммы, ее основной смысл и совет. Возможное значение применительно к ситуации вопрошающего. ' },
                     image: { type: Type.STRING, description: 'Символическое значение образа, составленного из двух триграмм.' }
                 },
                 required: ["name", "judgment", "image"]
             },
-            summary: {
-                type: Type.STRING,
-                description: 'Общий вывод, описание ситуации применительно к запросу пользователя, направление развития и мудрый совет, синтезирующий все аспекты гадания. Это должно быть заключительное напутствие.'
-            }
         },
-        required: ["primaryHexagram", "summary"]
+        required: ["primaryHexagram"]
     };
 
     if (hasChangingLines) {
@@ -72,7 +68,7 @@ const getIChingInterpretation = async (
 
         schema.properties.secondaryHexagram = {
             type: Type.OBJECT,
-            description: 'Объект с толкованием для вторичной гексаграммы. Должен быть предоставлен, так как есть изменяющиеся линии.',
+            description: 'Объект с толкованием для вторичной гексаграммы вообще и применительно к ситуаци вопрошающего. Должен быть предоставлен, так как есть изменяющиеся линии.',
             properties: {
                 name: { type: Type.STRING, description: 'Название вторичной гексаграммы на русском.' },
                 judgment: { type: Type.STRING, description: 'Толкование вторичной гексаграммы, указывающее на развитие ситуации или будущий потенциал.' }
@@ -82,6 +78,12 @@ const getIChingInterpretation = async (
         
         schema.required.push('changingLines', 'secondaryHexagram');
     }
+    
+    schema.properties.summary = {
+        type: Type.STRING,
+        description: 'Общий вывод, подробное и развернутое описание ситуации применительно к запросу пользователя, направление развития и мудрый совет, синтезирующий все аспекты гадания. Это должно быть заключительное напутствие.'
+    };
+    schema.required.push("summary");
 
     try {
         const response = await ai.models.generateContent({
@@ -90,7 +92,7 @@ const getIChingInterpretation = async (
             config: {
                 responseMimeType: "application/json",
                 responseSchema: schema,
-                maxOutputTokens: 5000,
+                maxOutputTokens: 8000,
                 thinkingConfig: { thinkingBudget: 1000 },
             },
         });
