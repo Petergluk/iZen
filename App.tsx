@@ -6,8 +6,10 @@ import HexagramDisplay from './components/HexagramDisplay';
 import CoinTossAnimation from './components/CoinTossAnimation';
 import Coin from './components/Coin';
 import InterpretingAnimation from './components/InterpretingAnimation';
+import SettingsModal from './components/SettingsModal';
 
 type GameState = 'start' | 'asking' | 'casting' | 'interpreting' | 'result' | 'error';
+type ModelType = 'gemini-2.5-flash' | 'gemini-2.5-pro';
 
 // Helper component for displaying static coins
 const StaticCoinsDisplay: React.FC<{
@@ -51,6 +53,14 @@ const App: React.FC = () => {
     const [lastToss, setLastToss] = useState<{values: (2|3)[], sum: LineValue} | null>(null);
     const [isAskingDissolving, setIsAskingDissolving] = useState(false);
     const [isSendingOff, setIsSendingOff] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [selectedModel, setSelectedModel] = useState<ModelType>(
+        () => (localStorage.getItem('geminiModel') as ModelType) || 'gemini-2.5-flash'
+    );
+
+    useEffect(() => {
+        localStorage.setItem('geminiModel', selectedModel);
+    }, [selectedModel]);
 
     const primaryHexagramLines = useMemo(() => lines.map(l => (l.value === 7 || l.value === 9) ? 1 : 0), [lines]);
     const primaryHexagram = useMemo(() => findHexagram(primaryHexagramLines), [primaryHexagramLines]);
@@ -92,7 +102,8 @@ const App: React.FC = () => {
                 primaryHexagram,
                 hasChangingLines ? secondaryHexagram : null,
                 changingLineNumbers,
-                question
+                question,
+                selectedModel
             );
             setResult(interpretation);
             setGameState('result');
@@ -100,7 +111,7 @@ const App: React.FC = () => {
             setError(err.message || 'Произошла неизвестная ошибка.');
             setGameState('error');
         }
-    }, [primaryHexagram, secondaryHexagram, changingLineIndices, question]);
+    }, [primaryHexagram, secondaryHexagram, changingLineIndices, question, selectedModel]);
 
     useEffect(() => {
         if (lines.length === 6) {
@@ -224,7 +235,7 @@ const App: React.FC = () => {
                             <p className="italic text-gray-400 whitespace-pre-wrap">{result.primaryHexagram.image}</p>
                         </div>
                         
-                        {result.changingLines.length > 0 && (
+                        {result.changingLines && result.changingLines.length > 0 && (
                              <div className="bg-slate-800/50 p-6 md:p-8 rounded-lg shadow-xl space-y-6 ring-1 ring-slate-700/50">
                                 <h3 className="text-2xl font-bold text-amber-300">Движение перемен</h3>
                                 {result.changingLines.map(line => {
@@ -243,7 +254,7 @@ const App: React.FC = () => {
                             </div>
                         )}
 
-                        {changingLineIndices.length > 0 && result.secondaryHexagram.name && (
+                        {changingLineIndices.length > 0 && result.secondaryHexagram && result.secondaryHexagram.name && (
                              <div className="bg-slate-800/50 p-6 md:p-8 rounded-lg shadow-xl space-y-6 ring-1 ring-slate-700/50">
                                 <h2 className="text-3xl font-bold text-amber-300">{result.secondaryHexagram.name}</h2>
                                 <p className="text-lg leading-relaxed whitespace-pre-wrap">{result.secondaryHexagram.judgment}</p>
@@ -279,6 +290,18 @@ const App: React.FC = () => {
 
     return (
         <main className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 bg-slate-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-700/20 via-slate-900 to-slate-900">
+             <div 
+                className="absolute top-0 left-0 w-16 h-16 cursor-pointer z-10" 
+                onClick={() => setIsSettingsOpen(true)}
+                aria-label="Открыть настройки"
+                role="button"
+             />
+             <SettingsModal 
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
+                currentModel={selectedModel}
+                onModelChange={setSelectedModel}
+             />
             {renderContent()}
         </main>
     );
