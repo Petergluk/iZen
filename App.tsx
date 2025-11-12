@@ -266,10 +266,21 @@ const App: React.FC = () => {
                             <p className="text-xl leading-relaxed whitespace-pre-wrap">{result.summary}</p>
                         </div>
 
-                        <div className="text-center pt-8">
-                           <button onClick={handleReset} className="px-8 py-4 bg-amber-400 text-slate-900 font-bold rounded-full hover:bg-amber-300 transition-colors duration-300 shadow-lg shadow-amber-500/20">
+                        <div className="text-center pt-8 flex flex-col sm:flex-row items-center justify-center gap-6">
+                           <button 
+                                onClick={handleReset} 
+                                className="px-8 py-4 bg-amber-400 text-slate-900 font-bold rounded-full hover:bg-amber-300 transition-colors duration-300 shadow-lg shadow-amber-500/20 w-full sm:w-auto text-lg"
+                           >
                                 Спросить снова
                            </button>
+                           <a 
+                                href="https://t.me/danzasemantica/570" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-block text-center px-8 py-4 border-2 border-amber-400/50 text-amber-300 font-bold rounded-full hover:bg-amber-400 hover:text-slate-900 hover:border-amber-400 transition-all duration-300 w-full sm:w-auto text-lg"
+                            >
+                                Задонатить автору
+                            </a>
                         </div>
                     </div>
                 );
