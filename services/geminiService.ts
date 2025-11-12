@@ -1,6 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { HexagramData } from '../types';
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const getIChingInterpretation = async (
     primaryHexagram: HexagramData,
     secondaryHexagram: HexagramData | null,
@@ -85,25 +87,54 @@ const getIChingInterpretation = async (
     };
     schema.required.push("summary");
 
-    try {
-        const response = await ai.models.generateContent({
-            model: model,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: schema,
-                maxOutputTokens: 8000,
-                thinkingConfig: { thinkingBudget: 1000 },
-            },
-        });
-        
-        const jsonText = response.text.trim();
-        return JSON.parse(jsonText);
+    const maxRetries = 3;
+    let delay = 2000; // Start with a 2-second delay
 
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        throw new Error("Не удалось получить толкование. Пожалуйста, попробуйте еще раз.");
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: schema,
+                    maxOutputTokens: 8000,
+                    thinkingConfig: { thinkingBudget: 1000 },
+                },
+            });
+            
+            const jsonText = response.text.trim();
+            if (!jsonText) {
+                throw new Error("API returned an empty response.");
+            }
+            return JSON.parse(jsonText);
+
+        } catch (error: any) {
+            console.error(`Error on attempt ${attempt}/${maxRetries}:`, error);
+
+            if (attempt === maxRetries) {
+                let userMessage = "Не удалось получить толкование после нескольких попыток.";
+                if (error.message) {
+                    const errorMessage = error.message.toLowerCase();
+                    if (errorMessage.includes('rate limit') || errorMessage.includes('quota')) {
+                        userMessage = "Сервер Oracle сейчас перегружен. Пожалуйста, попробуйте еще раз через несколько минут.";
+                    } else if (errorMessage.includes('empty response')) {
+                        userMessage = "Oracle вернул пустой ответ. Возможно, запрос был слишком сложным. Попробуйте переформулировать его.";
+                    } else if (error instanceof TypeError && errorMessage.includes('failed to fetch')) {
+                        userMessage = "Проблема с подключением к сети. Пожалуйста, проверьте ваше интернет-соединение и попробуйте снова.";
+                    }
+                }
+                throw new Error(userMessage);
+            }
+            
+            // Wait before next retry with exponential backoff
+            await sleep(delay);
+            delay *= 2;
+        }
     }
+
+    // This fallback should theoretically be unreachable.
+    throw new Error("Не удалось получить толкование. Произошла непредвиденная ошибка.");
 };
 
 export default getIChingInterpretation;
